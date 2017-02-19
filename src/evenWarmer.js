@@ -125,8 +125,15 @@ class Response{
 
 
 const routes ={
-	"/": "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n<link rel=\"stylesheet\" type=\"text/css\" href=\"foo.css\"><h2>This is a red header</h2><em>Hello</em><strong>World</strong>",
-	"/foo.css": "HTTP/1.1 200 OK\r\nContent-Type: text/css; charset=UTF-8\r\n\r\nh2{color:red}"
+	"/foo.css": {
+		"Content-Type":"text/css",
+		"body":"h2{color:red;}"
+	},
+	"/":{
+		"Content-Type":"text/html",
+		"body":"<link rel=\"stylesheet\" type=\"text/css\" href=\"foo.css\"><h2>This is a red header</h2><em>Hello</em><strong>World</strong>"
+
+	}
 }
 
 const server = net.createServer((sock)=>{
@@ -134,13 +141,30 @@ const server = net.createServer((sock)=>{
 	sock.on("data",(data)=>{
 		console.log(data.toString());
 		const request=new Request(data.toString());
-		if(routes.hasOwnProperty(request.path)){
-			sock.write(routes[request.path]);
+		const response = new Response(sock);
+		const path = request.path
 
-		}else{
-			sock.write("HTTP/1.1 404 OK\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nuh oh... 404 page not found");
+		if(routes.hasOwnProperty(path)){
+			response.setHeader("Content-Type",routes[path]["Content-Type"]);
+			response.send(200,routes[path].body);
+			console.log(response.toString());
+
+		 }else{
+		 	response.setHeader("Content-Type","text/plain");
+		 	response.send(404,"uh oh... 404 page not found");
+		 	console.log(response.toString());
 		}
-		sock.end();
+		response.end();
+		
+
+
+		// if(routes.hasOwnProperty(request.path)){
+		// 	sock.write(routes[request.path]);
+
+		// }else{
+		// 	sock.write("HTTP/1.1 404 OK\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nuh oh... 404 page not found");
+		// }
+		// sock.end();
 		
 		
 
