@@ -3,6 +3,37 @@
 const HOST ="127.0.0.1";
 const PORT = 8080;
 const net = require("net");
+const fs = require("fs");
+
+
+
+
+const routes ={
+	"/foo.css": {
+		"Content-Type":"text/css",
+		"body":"h2{color:red;}"
+	},
+	"/":{
+		"Content-Type":"text/html",
+		"body":"<link rel=\"stylesheet\" type=\"text/css\" href=\"foo.css\"><h2>This is a red header</h2><em>Hello</em><strong>World</strong>"
+
+	}
+};
+
+const fileSupport={
+	"jpge":"image/jpge",
+	"png":"image/png",
+	"gif":"image/gif",
+	"html":"text/html",
+	"css":"text/css",
+	"txt":"text/plain"
+
+};
+
+
+
+
+
 //Request 
 class Request{
 	constructor(httpRequest){
@@ -65,7 +96,7 @@ class Response{
 			301:"Moved Permanently",
 			302:"Found",
 			303:"See Other"
-		}
+		};
 
 	}
 	setHeader(name,value){
@@ -75,13 +106,13 @@ class Response{
 		this.sock.write(data);
 
 	}
-	end(s){
-		this.sock.end(s);
+	end(...s){
+		this.sock.end(...s);
 	}
 	send(statusCode,body){
 		this.body=body;
 		this.statusCode=statusCode;
-		let res = this.toString();
+		const res = this.toString();
 		this.end(res);
 
 
@@ -102,8 +133,8 @@ class Response{
 		if(args.length>2){
 			throw new Error("Incorrect number of arguments!");
 		}
-		const statusCode = args.length==2 ? args[0] : 301;
-		const url =  args.length==2 ? args[1] : args[0];
+		const statusCode = args.length===2 ? args[0] : 301;
+		const url = args.length===2 ? args[1] : args[0];
 		this.setHeader("Location",url);
 		this.statusCode=statusCode;
 		this.send(statusCode,this.body);
@@ -120,21 +151,36 @@ class Response{
 		return res;
 
 	}
+	sendFile(fileName){
+		const filePath="./public/"+fileName;
+		const extention = fileName.trim().split(".").slice(-1)[0];
+		const fileType = fileSupport[extention].split("/")[0];
+		const encoding = fileType==="text"? "utf8":null;
+		
+		fs.readFile(filePath,encoding,(err,data)=>{
+			if(err){
+				this.setHeader("Content-Type","text/plain");
+				this.send(500,"Something is Wrong:(");
+				throw err;
+			}else{
+				this.setHeader("Content-Type",fileSupport[extention]);
+				this.writeHead(200);
+				this.write(data);
+				this.end();
 
-}
+			}
 
+		});
 
-const routes ={
-	"/foo.css": {
-		"Content-Type":"text/css",
-		"body":"h2{color:red;}"
-	},
-	"/":{
-		"Content-Type":"text/html",
-		"body":"<link rel=\"stylesheet\" type=\"text/css\" href=\"foo.css\"><h2>This is a red header</h2><em>Hello</em><strong>World</strong>"
+		
+		
 
 	}
+
+
 }
+
+
 
 const server = net.createServer((sock)=>{
 	console.log(`got connection from ${sock.remoteAddress}:${sock.remotePort}`);
@@ -142,19 +188,21 @@ const server = net.createServer((sock)=>{
 		console.log(data.toString());
 		const request=new Request(data.toString());
 		const response = new Response(sock);
-		const path = request.path
+		const path = request.path;
+		response.sendFile("html/test.html");
 
-		if(routes.hasOwnProperty(path)){
-			response.setHeader("Content-Type",routes[path]["Content-Type"]);
-			response.send(200,routes[path].body);
-			console.log(response.toString());
+		// if(routes.hasOwnProperty(path)){
+		// 	response.setHeader("Content-Type",routes[path]["Content-Type"]);
+		// 	response.send(200,routes[path].body);
+		// 	console.log(response.toString());
 
-		 }else{
-		 	response.setHeader("Content-Type","text/plain");
-		 	response.send(404,"uh oh... 404 page not found");
-		 	console.log(response.toString());
-		}
-		response.end();
+		// }
+		// else{
+		// 	response.setHeader("Content-Type","text/plain");
+		// 	response.send(404,"uh oh... 404 page not found");
+		// 	console.log(response.toString());
+		// }
+		// response.end();
 		
 
 
@@ -178,6 +226,7 @@ const server = net.createServer((sock)=>{
 });
 
 server.listen(PORT,HOST);
+
 
 
 
