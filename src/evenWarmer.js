@@ -9,15 +9,19 @@ const fs = require("fs");
 
 
 const routes ={
-	"/foo.css": {
-		"Content-Type":"text/css",
-		"body":"h2{color:red;}"
-	},
-	"/":{
-		"Content-Type":"text/html",
-		"body":"<link rel=\"stylesheet\" type=\"text/css\" href=\"foo.css\"><h2>This is a red header</h2><em>Hello</em><strong>World</strong>"
+	// "/foo.css": {
+	// 	"Content-Type":"text/css",
+	// 	"body":"h2{color:red;}"
+	// },
+	// "/":{
+	// 	"Content-Type":"text/html",
+	// 	"body":"<link rel=\"stylesheet\" type=\"text/css\" href=\"foo.css\"><h2>This is a red header</h2><em>Hello</em><strong>World</strong>"
 
-	}
+	// }
+	"/test":"html/test.html",
+	"/img/bmo1.gif":"/img/bmo1.gif",
+	"/foo.css":"css/foo.css",
+	"/":"html/part1.html"
 };
 
 const fileSupport={
@@ -126,6 +130,7 @@ class Response{
 			}
 		}
 		res+="\r\n";
+		console.log(res);
 		this.write(res);
 
 	}
@@ -152,7 +157,7 @@ class Response{
 
 	}
 	sendFile(fileName){
-		const filePath="./public/"+fileName;
+		const filePath=__dirname+"/../public/"+fileName;
 		const extention = fileName.trim().split(".").slice(-1)[0];
 		const fileType = fileSupport[extention].split("/")[0];
 		const encoding = fileType==="text"? "utf8":null;
@@ -169,13 +174,16 @@ class Response{
 				this.end();
 
 			}
+			console.log(this.toString());
 
 		});
 
 		
 		
-
 	}
+
+
+
 
 
 }
@@ -185,11 +193,27 @@ class Response{
 const server = net.createServer((sock)=>{
 	console.log(`got connection from ${sock.remoteAddress}:${sock.remotePort}`);
 	sock.on("data",(data)=>{
-		console.log(data.toString());
 		const request=new Request(data.toString());
 		const response = new Response(sock);
 		const path = request.path;
-		response.sendFile("html/test.html");
+		if(routes.hasOwnProperty(path)){
+			response.sendFile(routes[path]);
+
+		}else{
+			response.setHeader("Content-Type","text/plain");
+			response.send(404,"uh oh... 404 page not found");
+
+		}
+
+
+		/*
+		
+
+		Part 2 code
+
+
+
+		*/	
 
 		// if(routes.hasOwnProperty(path)){
 		// 	response.setHeader("Content-Type",routes[path]["Content-Type"]);
@@ -203,6 +227,12 @@ const server = net.createServer((sock)=>{
 		// 	console.log(response.toString());
 		// }
 		// response.end();
+
+		/*
+
+         Part 1 code
+
+		*/
 		
 
 
