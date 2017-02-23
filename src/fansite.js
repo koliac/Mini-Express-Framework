@@ -3,7 +3,7 @@
 const App = require("./miniWeb.js").App;
 const app = new App();
 
-app.get("/",(req,res)=>{
+app.get("",(req,res)=>{
    res.sendFile("html/fansite.html");
 });
 app.get("/about",(req,res)=>{

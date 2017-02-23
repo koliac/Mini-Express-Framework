@@ -21,7 +21,7 @@ const server = net.createServer((sock)=>{
 
 
 	});
-	sock.on("close",(data)=>{
+	sock.on("close",()=>{
 		console.log(`closed - ${sock.remoteAddress}:${sock.remotePort}`);
 	});
 });

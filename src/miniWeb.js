@@ -50,7 +50,7 @@ const fs = require("fs");
 class Request{
 	constructor(httpRequest){
 		const tokens = httpRequest.split("\r\n");
-		const path = tokens[0].trim().split(" ")[1].replace(/^.+\//,"/");
+		const path = tokens[0].trim().split(" ")[1];
 		const method =tokens[0].trim().split(" ")[0];
 		let i=1;
 		const headers={};
@@ -221,6 +221,7 @@ class App{
 	}
 	get(path,cb){
 		this.routes[path]=cb;
+		this.routes[path+"/"]=cb;
 
 	}
 	listen(port,host){
