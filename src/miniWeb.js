@@ -1,49 +1,7 @@
-// miniWeb.js
-// define your Request, Response and App objects here
-// evenWarmer.js
 // create Request and Response constructors...
 
 const net = require("net");
 const fs = require("fs");
-
-// const HOST ="127.0.0.1";
-// const PORT = 8080;
-
-
-
-
-// const routes ={
-	//  //Used in Part 1 
-	//====================================
-	// "/foo.css": {
-	// 	"Content-Type":"text/css",
-	// 	"body":"h2{color:red;}"
-	// },
-	// "/":{
-	// 	"Content-Type":"text/html",
-	// 	"body":"<link rel=\"stylesheet\" type=\"text/css\" href=\"foo.css\"><h2>This is a red header</h2><em>Hello</em><strong>World</strong>"
-
-	// }
-	// //Used in Part 2
-	//=====================================
-// 	"/test":"html/test.html",
-// 	"/img/bmo1.gif":"/img/bmo1.gif",
-// 	"/foo.css":"css/foo.css",
-// 	"/":"html/part1.html"
-// };
-
-// const fileSupport={
-// 	"jpge":"image/jpge",
-// 	"png":"image/png",
-// 	"gif":"image/gif",
-// 	"html":"text/html",
-// 	"css":"text/css",
-// 	"txt":"text/plain"
-
-// };
-
-
-
 
 
 //Request 
@@ -201,18 +159,6 @@ class Response{
 }
 
 
-
-
-
-
-	// this.routes ={
-	// 		"/test":"html/test.html",
-	// 		"/img/bmo1.gif":"/img/bmo1.gif",
-	// 		"/foo.css":"css/foo.css",
-	// 		"/":"html/part1.html",
-	// 		"":"html/part1.html"
-
-	// 	};
 class App{
 	constructor(){
 		this.server = net.createServer(this.handleConnection.bind(this));
@@ -259,78 +205,6 @@ class App{
 	}
 
 }
-
-
-
-// const server = net.createServer((sock)=>{
-// 	console.log(`got connection from ${sock.remoteAddress}:${sock.remotePort}`);
-// 	sock.on("data",(data)=>{
-// 		const request=new Request(data.toString());
-// 		const response = new Response(sock);
-// 		const path = request.path;
-// 		if(routes.hasOwnProperty(path)){
-// 			response.sendFile(routes[path]);
-
-// 		}else{
-// 			response.setHeader("Content-Type","text/plain");
-// 			response.send(404,"uh oh... 404 page not found");
-
-// 		}
-
-
-		/*
-		
-
-		Part 2 code
-
-
-
-		*/	
-
-		// if(routes.hasOwnProperty(path)){
-		// 	response.setHeader("Content-Type",routes[path]["Content-Type"]);
-		// 	response.send(200,routes[path].body);
-		// 	console.log(response.toString());
-
-		// }
-		// else{
-		// 	response.setHeader("Content-Type","text/plain");
-		// 	response.send(404,"uh oh... 404 page not found");
-		// 	console.log(response.toString());
-		// }
-		// response.end();
-
-		/*
-
-         Part 1 code
-
-         */
-
-
-
-		// if(routes.hasOwnProperty(request.path)){
-		// 	sock.write(routes[request.path]);
-
-		// }else{
-		// 	sock.write("HTTP/1.1 404 OK\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nuh oh... 404 page not found");
-		// }
-		// sock.end();
-		
-		
-
-
-
-
-// 	});
-// 	sock.on("close",(data)=>{
-// 		console.log(`closed - ${sock.remoteAddress}:${sock.remotePort}`);
-// 	});
-// });
-
-// server.listen(PORT,HOST);
-
-
-
 
 
 module.exports={
